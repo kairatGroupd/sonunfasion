@@ -1,4 +1,3 @@
-python==3.6.5
 aiohttp==3.7.4.post0
 asgiref==3.3.4
 async-timeout==3.0.1
@@ -17,3 +16,4 @@ telepot==12.7
 typing-extensions==3.7.4.3
 urllib3==1.26.4
 yarl==1.6.3
+python==3.6.5

@@ -6,6 +6,10 @@ from .models import *
 # from .forms import UserCreationForm
 # from .models import MyUser
 
+class ColorAdmin(admin.ModelAdmin):
+	list_display = ('id','color')
+
+admin.site.register(Color, ColorAdmin)
 
 # Register your models here.
 class CategoryAdmin(admin.ModelAdmin):
@@ -21,7 +25,7 @@ admin.site.register(Category, CategoryAdmin)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "price","image")
+    list_display = ("id", "title", "price","image",)
     # readonoly_fields = ImagesInline
     # inlines = [ImagesInline, ]
 
@@ -31,7 +35,7 @@ admin.site.register(Product, ProductAdmin)
 
 
 class SizeAdmin(admin.ModelAdmin):
-    list_display = ("id", "size", "count")
+    list_display = ("id", "size",)
 
 
 admin.site.register(Size, SizeAdmin)

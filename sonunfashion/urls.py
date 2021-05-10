@@ -23,7 +23,7 @@ urlpatterns = [
     path('', include('sonun.urls')),
     # path('orders/', include('orders.urls')),
     path('api/', include('api.urls')),
-    path('tgsonun/', include('tgs.urls')),
+    # path('tgsonun/', include('tgs.urls')),
 ]
 
 
