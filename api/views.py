@@ -1,4 +1,5 @@
 # APIview
+from urllib import response
 
 from rest_framework.generics import ListCreateAPIView
 from django_filters.rest_framework import DjangoFilterBackend
@@ -8,12 +9,9 @@ from api.serializers import CategorySerializer, ProductSerializer, StockSerializ
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
-# The telegram bot exempl
-
-from django.views.decorators.http import require_http_methods
-import time
-import datetime
 import requests
 from django.conf import settings
 
@@ -40,44 +38,56 @@ class StockViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = StockSerializer
 
 
-# Bot configuretion
+bot_api_key = settings.TOKEN  
+print(bot_api_key)
+chanale_name = '@Sonunfashion1'
 
 
 
+def tgapi(order_tg):
+    messages = f'''
+    Здравствуйте, Вас приветствует бот Sonufashion!!!
+    Заказ №: {order_tg.id}
+    Имя заказчика: {order_tg.first_name}
+    Фамилия заказчика: {order_tg.last_name}
+    Номер телефона: {order_tg.phone}
+    Почта Email: {order_tg.email}
+    Адрес: {order_tg.address}
+    Почтовый индекс: {order_tg.postal_code}
+    Город: {order_tg.city}
+    Дата создания: {order_tg.created}
+    --------------------------
+    Что заказали:
+    {order_tg.products}
+    '''
+    params = {
+        'chat_id' : chanale_name,
+        'text' : messages,
+    }
+    url = f'http://api.telegram.org/bot{bot_api_key}/sendMessage'
+    requests.get(url, params = params).content
 
-class OrderViewset(viewsets.ReadOnlyModelViewSet, ListCreateAPIView):
-	queryset = Order.objects.all()
-	serializer_class = OrderSerializer
+
+class OrderView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        questions = Order.objects.all()
+        serializer = OrderSerializer(questions, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        serializer = OrderSerializer(data=request.data)
+
+        
+        # order_tg = 'hell'
+        if serializer.is_valid():
+            question = serializer.save()
+            tgapi(question)
+            serializer = OrderSerializer(question)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-# order_now = Order.objects.all().order_by('-id')[:1].id
-# print(order_now)
-
-# order_now = Order.objects.all().last().id
-# print(order_now)
-
-
-# bot_api_key = settings.TOKEN  
-# print(bot_api_key)
-# chanale_name = '@Sonunfashion1'
-# message = f'''
-#     Здравствуйте, Вас приветствует бот Sonufashion!!!
-#     Заказ № {OrderViewset.queryset.latest}
-#     --------------------------
-# '''
-# params = {
-#     'chat_id' : chanale_name,
-#     'text' : message,
-# }
-
-# if Order.objects.all().list('created') >= datetime.date.today(strptime(string, '%Y-%m-%dT%H:%M:%S.%fZ')):
-    
-#     url = f'http://api.telegram.org/bot{bot_api_key}/sendMessage'
-#     print(url)
-#     print(requests.get(url, params = params).content)
-# else:
-#     print("Я проверил сайт, пока нет заказов")
 
 
 
